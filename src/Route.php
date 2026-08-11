@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tanahiro2010\SlimRouterDsl;
 
 use Tanahiro2010\SlimRouterDsl\Contracts\RouteNode;
-use Tanahiro2010\SlimRouterDsl\Exception\InvalidMiddlewareException;
 use Tanahiro2010\SlimRouterDsl\Nodes\HttpRoute;
 use Tanahiro2010\SlimRouterDsl\Nodes\MiddlewareGroup;
 use Tanahiro2010\SlimRouterDsl\Nodes\RouteGroup;
+use Tanahiro2010\SlimRouterDsl\Support\MiddlewareList;
 
 final class Route
 {
@@ -47,6 +47,11 @@ final class Route
         return self::map(['OPTIONS'], $path, $handler);
     }
 
+    public static function head(string $path, mixed $handler): HttpRoute
+    {
+        return self::map(['HEAD'], $path, $handler);
+    }
+
     public static function any(string $path, mixed $handler): HttpRoute
     {
         return self::map(self::ANY_METHODS, $path, $handler);
@@ -74,12 +79,6 @@ final class Route
      */
     public static function middleware(string|object|array $middleware, array $children): MiddlewareGroup
     {
-        $middlewareList = is_array($middleware) ? $middleware : [$middleware];
-
-        if ($middlewareList === []) {
-            throw new InvalidMiddlewareException('Route::middleware() requires at least one middleware.');
-        }
-
-        return new MiddlewareGroup($middlewareList, $children);
+        return new MiddlewareGroup(MiddlewareList::normalize($middleware), $children);
     }
 }
