@@ -9,6 +9,7 @@ class ComposerStaticInit26c1a602d674ab0f088259ebc1ed0e52
     public static $files = array (
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '253c157292f75eb38082b5acb06f3f01' => __DIR__ . '/..' . '/nikic/fast-route/src/functions.php',
+        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
     );
 
@@ -20,6 +21,7 @@ class ComposerStaticInit26c1a602d674ab0f088259ebc1ed0e52
         ),
         'S' =>
         array (
+            'Slim\\Psr7\\' => 10,
             'Slim\\' => 5,
         ),
         'P' =>
@@ -32,6 +34,7 @@ class ComposerStaticInit26c1a602d674ab0f088259ebc1ed0e52
         ),
         'F' =>
         array (
+            'Fig\\Http\\Message\\' => 17,
             'FastRoute\\' => 10,
         ),
         'D' =>
@@ -48,6 +51,10 @@ class ComposerStaticInit26c1a602d674ab0f088259ebc1ed0e52
         'Tanahiro2010\\SlimRouterDsl\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
+        ),
+        'Slim\\Psr7\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/slim/psr7/src',
         ),
         'Slim\\' =>
         array (
@@ -74,6 +81,10 @@ class ComposerStaticInit26c1a602d674ab0f088259ebc1ed0e52
         'PhpParser\\' =>
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
+        ),
+        'Fig\\Http\\Message\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/fig/http-message-util/src',
         ),
         'FastRoute\\' =>
         array (

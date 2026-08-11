@@ -3,13 +3,22 @@
         'name' => 'tanahiro2010/slim-router-dsl',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '6b9dd30975e6beeeafb4c3abf5899ae3bdf893bc',
+        'reference' => '6dbd91285c6fd285cb269b7c43a4f062a2ec8fad',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
+        'fig/http-message-util' => array(
+            'pretty_version' => '1.1.5',
+            'version' => '1.1.5.0',
+            'reference' => '9d94dc0154230ac39e5bf89398b324a86f63f765',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../fig/http-message-util',
+            'aliases' => array(),
+            'dev_requirement' => true,
+        ),
         'myclabs/deep-copy' => array(
             'pretty_version' => '1.13.4',
             'version' => '1.13.4.0',
@@ -127,6 +136,12 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'psr/http-factory-implementation' => array(
+            'dev_requirement' => true,
+            'provided' => array(
+                0 => '^1.0',
+            ),
+        ),
         'psr/http-message' => array(
             'pretty_version' => '2.0',
             'version' => '2.0.0.0',
@@ -135,6 +150,12 @@
             'install_path' => __DIR__ . '/../psr/http-message',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'psr/http-message-implementation' => array(
+            'dev_requirement' => true,
+            'provided' => array(
+                0 => '^1.0 || ^2.0',
+            ),
         ),
         'psr/http-server-handler' => array(
             'pretty_version' => '1.0.2',
@@ -162,6 +183,15 @@
             'install_path' => __DIR__ . '/../psr/log',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'ralouphie/getallheaders' => array(
+            'pretty_version' => '3.0.3',
+            'version' => '3.0.3.0',
+            'reference' => '120b605dfeb996808c31b6477290a714d356e822',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../ralouphie/getallheaders',
+            'aliases' => array(),
+            'dev_requirement' => true,
         ),
         'sebastian/cli-parser' => array(
             'pretty_version' => '3.0.2',
@@ -298,6 +328,15 @@
             'aliases' => array(),
             'dev_requirement' => true,
         ),
+        'slim/psr7' => array(
+            'pretty_version' => '1.8.0',
+            'version' => '1.8.0.0',
+            'reference' => '76e7e3b1cdfd583e9035c4c966c08e01e45ce959',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../slim/psr7',
+            'aliases' => array(),
+            'dev_requirement' => true,
+        ),
         'slim/slim' => array(
             'pretty_version' => '4.15.2',
             'version' => '4.15.2.0',
@@ -319,7 +358,7 @@
         'tanahiro2010/slim-router-dsl' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '6b9dd30975e6beeeafb4c3abf5899ae3bdf893bc',
+            'reference' => '6dbd91285c6fd285cb269b7c43a4f062a2ec8fad',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
