@@ -108,19 +108,21 @@ Route::get('/me', [UserController::class, 'me'])
 
 `HttpRoute` はimmutableなので、`middleware()` / `name()` はどちらも新しいインスタンスを返します。元のインスタンスは変更されません。Route単位のmiddlewareは、GroupやMiddlewareから継承したmiddlewareより後（Handlerに最も近い位置）に実行されます。`name()` で指定した名前は `deploy()` 時にSlimの `setName()` に渡されます。
 
-### Route Dump / toArray()
+### Route Dump / toArray() / compile()
 
 ```php
 echo $routes->dump();
 ```
 
 ```text
-GET     /
-GET     /api/users
-POST    /api/users
-GET     /api/users/{id}
-DELETE  /api/users/{id}
+METHOD  PATH                  NAME           MIDDLEWARE
+GET     /                     -              -
+GET     /api/users            users.index    Auth
+GET     /api/users/{id}       users.show     Auth
+POST    /api/users            users.create   Auth, Json
 ```
+
+列は `dump(bool $showMiddleware = true, bool $showName = true, bool $showHandler = false)` で調整できます。
 
 ```php
 $routes->toArray();
@@ -139,7 +141,31 @@ $routes->toArray();
 ];
 ```
 
+`compile()` は同じ内容を `CompiledRoute[]`（`methods`/`path`/`handler`/`middleware`/`name` を持つreadonlyオブジェクト）として返す、より低レベルなAPIです。`toArray()`/`dump()`/後述のInspection APIはすべてこの `compile()` の結果を利用しています。
+
 いずれもSlimへ`deploy()`する前に呼び出せる、Slimに依存しないルートツリーの解析APIです。
+
+### Route Inspection
+
+```php
+$routes->findByName('users.show');      // ?CompiledRoute
+$routes->filterByMethod('POST');        // CompiledRoute[]
+$routes->findByPath('/api/users');      // CompiledRoute[]（同一pathに複数methodがあり得るため配列）
+$routes->filterByMiddleware(AuthMiddleware::class); // CompiledRoute[]
+```
+
+### Validation
+
+```php
+$routes->validate();
+```
+
+`deploy()` 前に呼び出すことで、以下を検出できます（**`deploy()` は自動でvalidateしません**、明示的に呼び出してください）。
+
+- 同一Method + Pathの重複定義 → `DuplicateRouteException`
+- 同一Route Nameの重複定義 → `DuplicateRouteNameException`
+
+いずれも最初に見つかった時点でthrowされます（method+pathの重複チェックが先、name重複チェックが後）。
 
 ### deploy()
 
@@ -158,10 +184,12 @@ $routes->deploy($app);
 - `InvalidRouteNodeException`: `Routes` / Group / Middleware の children に `RouteNode` 以外が渡された場合
 - `InvalidRouteException`: `Route::map()` に空のmethod配列が渡された場合
 - `InvalidMiddlewareException`: `Route::middleware()` に空のmiddleware配列が渡された場合
+- `DuplicateRouteException`: `Routes::validate()` が同一Method + Pathの重複を検出した場合
+- `DuplicateRouteNameException`: `Routes::validate()` が同一Route Nameの重複を検出した場合
 
 ## v1 Scope
 
-v1では以下を提供します（MVP Scope + Optional Scope）。
+v1.0では以下を提供しました（MVP Scope + Optional Scope）。
 
 - `Routes` / `Routes::deploy()` / `Routes::toArray()` / `Routes::dump()`
 - `Route::get/post/put/patch/delete/options/head/map/any/group/middleware()`
@@ -170,7 +198,14 @@ v1では以下を提供します（MVP Scope + Optional Scope）。
 - Slim 4 Compiler、Path正規化、Middleware順序保持、Route Name
 - 基本的なバリデーションと例外
 
-詳細は [slim-router-dsl-prd.md](slim-router-dsl-prd.md) を参照してください。
+v1.1では以下を追加しました。
+
+- `Routes::compile()` — `CompiledRoute[]` のPublic API化
+- `Routes::findByName()` / `filterByMethod()` / `findByPath()` / `filterByMiddleware()`
+- `Routes::validate()`（重複Route / 重複Route Nameの検出）
+- `dump()` のテーブル形式化(NAME/MIDDLEWARE列、オプションでHANDLER列)
+
+詳細は [CHANGELOG.md](CHANGELOG.md) と [slim-router-dsl-prd.md](slim-router-dsl-prd.md) を参照してください。
 
 ## 動作要件
 

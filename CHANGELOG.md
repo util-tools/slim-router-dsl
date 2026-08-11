@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-08-11
+
+Inspection & Validation, matching the "v1.1 — Inspection & Validation" milestone of the
+project's internal roadmap.
+
+### Added
+
+- `Routes::compile()` — public `CompiledRoute[]` API, the shared foundation for `toArray()`,
+  `dump()`, and the new inspection methods below
+- `Routes::findByName()`, `filterByMethod()`, `findByPath()`, `filterByMiddleware()` — backed
+  by a new internal `RouteInspector` collaborator
+- `Routes::validate()` — detects duplicate method+path definitions (`DuplicateRouteException`)
+  and duplicate route names (`DuplicateRouteNameException`), backed by a new internal
+  `RouteValidator` collaborator. Opt-in only; not called automatically by `deploy()`
+- New exceptions: `DuplicateRouteException`, `DuplicateRouteNameException`
+
+### Changed
+
+- **Breaking:** `dump()` output is now a column-aligned table (`METHOD`/`PATH`/`NAME`/
+  `MIDDLEWARE`, optionally `HANDLER`) instead of the previous two-column `"METHOD  PATH"`
+  format. New signature: `dump(bool $showMiddleware = true, bool $showName = true, bool $showHandler = false): string`
+
 ## [1.0.0] - 2026-08-11
 
 Initial release. Scope matches the "v1.0.0 — Initial Release" milestone of the project's
