@@ -1,0 +1,20 @@
+{
+    "name": "tanahiro2010/slim-router-dsl",
+    "description": "Slim Original DSL for router",
+    "type": "library",
+    "require": {
+        "slim/slim": "^4.15"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Tanahiro2010\\SlimRouterDsl\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Hirohisa Tanaka(tanahiro2010)",
+            "email": "herentongkegu087@gmail.com"
+        }
+    ]
+}
