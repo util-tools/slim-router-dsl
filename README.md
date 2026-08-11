@@ -55,6 +55,9 @@ Route::map(['GET', 'HEAD'], '/resource', ResourceController::class);
 
 // 主要HTTP Methodをまとめて登録
 Route::any('/health', HealthController::class);
+
+// HEAD
+Route::head('/users', [UserController::class, 'index']);
 ```
 
 Handlerには Callable、`[Controller::class, 'method']`、Invokable Classのいずれも指定できます。Controllerの解決は行わずSlim / Containerに委ねます。
@@ -95,6 +98,49 @@ Route::middleware(AuthMiddleware::class, [
 
 MiddlewareはGroupと自由にネストでき、Middleware情報は子ノードへ継承されます。DSL上で記述した順序（外側 → 内側）と実行順序が一致するように `deploy()` 時に登録順が調整されます。
 
+### Route単位のFluent Middleware / Route Name
+
+```php
+Route::get('/me', [UserController::class, 'me'])
+    ->middleware(AuthMiddleware::class)
+    ->name('users.me');
+```
+
+`HttpRoute` はimmutableなので、`middleware()` / `name()` はどちらも新しいインスタンスを返します。元のインスタンスは変更されません。Route単位のmiddlewareは、GroupやMiddlewareから継承したmiddlewareより後（Handlerに最も近い位置）に実行されます。`name()` で指定した名前は `deploy()` 時にSlimの `setName()` に渡されます。
+
+### Route Dump / toArray()
+
+```php
+echo $routes->dump();
+```
+
+```text
+GET     /
+GET     /api/users
+POST    /api/users
+GET     /api/users/{id}
+DELETE  /api/users/{id}
+```
+
+```php
+$routes->toArray();
+```
+
+```php
+[
+    [
+        'methods' => ['GET'],
+        'path' => '/api/users',
+        'handler' => [UserController::class, 'index'],
+        'middleware' => [AuthMiddleware::class],
+        'name' => null,
+    ],
+    // ...
+];
+```
+
+いずれもSlimへ`deploy()`する前に呼び出せる、Slimに依存しないルートツリーの解析APIです。
+
 ### deploy()
 
 ```php
@@ -115,15 +161,16 @@ $routes->deploy($app);
 
 ## v1 Scope
 
-v1では以下を提供します。
+v1では以下を提供します（MVP Scope + Optional Scope）。
 
-- `Routes` / `Routes::deploy()`
-- `Route::get/post/put/patch/delete/options/map/any/group/middleware()`
-- Nested Group / Nested Middleware / Multiple Middleware
-- Slim 4 Compiler、Path正規化、Middleware順序保持
+- `Routes` / `Routes::deploy()` / `Routes::toArray()` / `Routes::dump()`
+- `Route::get/post/put/patch/delete/options/head/map/any/group/middleware()`
+- `HttpRoute::middleware()` / `HttpRoute::name()`（Fluent API、共にimmutable）
+- Nested Group / Nested Middleware / Multiple Middleware / Route-level Middleware
+- Slim 4 Compiler、Path正規化、Middleware順序保持、Route Name
 - 基本的なバリデーションと例外
 
-Route Name、Route単位のFluent Middleware、`dump()`、`toArray()` などはv1のOptional Scopeとして今後の対応候補です。詳細は [slim-router-dsl-prd.md](slim-router-dsl-prd.md) を参照してください。
+詳細は [slim-router-dsl-prd.md](slim-router-dsl-prd.md) を参照してください。
 
 ## 動作要件
 
