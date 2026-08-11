@@ -61,7 +61,7 @@ final class RouteInspectionTest extends TestCase
         self::assertSame('users.show', $result[0]['name']);
     }
 
-    public function testDumpFormatsMethodAndPath(): void
+    public function testDumpFormatsMethodAndPathAsATable(): void
     {
         $routes = new Routes([
             Route::get('/', 'Home'),
@@ -72,9 +72,10 @@ final class RouteInspectionTest extends TestCase
         ]);
 
         $expected = implode("\n", [
-            'GET     /',
-            'GET     /api/users',
-            'POST    /api/users',
+            'METHOD  PATH        NAME  MIDDLEWARE',
+            'GET     /           -     -',
+            'GET     /api/users  -     -',
+            'POST    /api/users  -     -',
         ]);
 
         self::assertSame($expected, $routes->dump());
@@ -86,6 +87,27 @@ final class RouteInspectionTest extends TestCase
             Route::map(['GET', 'HEAD'], '/resource', 'Handler'),
         ]);
 
-        self::assertSame('GET,HEAD /resource', $routes->dump());
+        $expected = implode("\n", [
+            'METHOD    PATH       NAME  MIDDLEWARE',
+            'GET,HEAD  /resource  -     -',
+        ]);
+
+        self::assertSame($expected, $routes->dump());
+    }
+
+    public function testDumpCanHideColumnsAndShowHandler(): void
+    {
+        $routes = new Routes([
+            Route::middleware('Auth', [
+                Route::get('/users/{id}', ['UserController', 'show'])->name('users.show'),
+            ]),
+        ]);
+
+        $expected = implode("\n", [
+            'METHOD  PATH         HANDLER',
+            'GET     /users/{id}  UserController::show',
+        ]);
+
+        self::assertSame($expected, $routes->dump(showMiddleware: false, showName: false, showHandler: true));
     }
 }
