@@ -152,4 +152,56 @@ final class SlimRouteCompilerTest extends TestCase
 
         self::assertSame(['A', 'B', 'Route'], $order);
     }
+
+    public function testRouteNameIsAppliedToSlimRoute(): void
+    {
+        $routes = new Routes([
+            Route::get('/users/{id}', fn (Request $request, Response $response) => $response)
+                ->name('users.show'),
+        ]);
+
+        $routes->deploy($this->app);
+
+        $registered = array_values($this->app->getRouteCollector()->getRoutes());
+
+        self::assertSame('users.show', $registered[0]->getName());
+    }
+
+    public function testRouteLevelMiddlewareExecutesClosestToHandler(): void
+    {
+        $order = [];
+
+        $makeMiddleware = static function (string $name) use (&$order): MiddlewareInterface {
+            return new class($name, $order) implements MiddlewareInterface {
+                public function __construct(
+                    private string $name,
+                    private array &$order,
+                ) {
+                }
+
+                public function process(Request $request, Handler $handler): Response
+                {
+                    $this->order[] = $this->name;
+
+                    return $handler->handle($request);
+                }
+            };
+        };
+
+        $routes = new Routes([
+            Route::middleware($makeMiddleware('Json'), [
+                Route::get('/', function (Request $request, Response $response) use (&$order) {
+                    $order[] = 'Route';
+
+                    return $response;
+                })->middleware($makeMiddleware('Auth')),
+            ]),
+        ]);
+
+        $routes->deploy($this->app);
+
+        $this->app->handle($this->request('GET', '/'));
+
+        self::assertSame(['Json', 'Auth', 'Route'], $order);
+    }
 }

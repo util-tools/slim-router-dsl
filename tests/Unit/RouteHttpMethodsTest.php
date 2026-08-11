@@ -79,4 +79,12 @@ final class RouteHttpMethodsTest extends TestCase
         self::assertSame(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $route->methods);
         self::assertSame('/health', $route->path);
     }
+
+    public function testHead(): void
+    {
+        $route = Route::head('/users', 'Handler');
+
+        self::assertSame(['HEAD'], $route->methods);
+        self::assertSame('/users', $route->path);
+    }
 }

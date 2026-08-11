@@ -78,4 +78,43 @@ final class RouteMiddlewareTest extends TestCase
 
         self::assertSame(['A', 'B', 'C'], $group->middleware);
     }
+
+    public function testFluentMiddlewareOnHttpRoute(): void
+    {
+        $route = Route::get('/me', 'Handler')->middleware('AuthMiddleware');
+
+        self::assertSame(['AuthMiddleware'], $route->middleware);
+    }
+
+    public function testFluentMiddlewareAcceptsArray(): void
+    {
+        $route = Route::get('/me', 'Handler')->middleware(['AuthMiddleware', 'JsonMiddleware']);
+
+        self::assertSame(['AuthMiddleware', 'JsonMiddleware'], $route->middleware);
+    }
+
+    public function testFluentMiddlewareIsChainableAndAppends(): void
+    {
+        $route = Route::get('/me', 'Handler')
+            ->middleware('AuthMiddleware')
+            ->middleware('JsonMiddleware');
+
+        self::assertSame(['AuthMiddleware', 'JsonMiddleware'], $route->middleware);
+    }
+
+    public function testFluentMiddlewareRejectsEmptyArray(): void
+    {
+        $this->expectException(InvalidMiddlewareException::class);
+
+        Route::get('/me', 'Handler')->middleware([]);
+    }
+
+    public function testFluentMiddlewareReturnsNewInstance(): void
+    {
+        $original = Route::get('/me', 'Handler');
+        $withMiddleware = $original->middleware('AuthMiddleware');
+
+        self::assertSame([], $original->middleware);
+        self::assertNotSame($original, $withMiddleware);
+    }
 }
