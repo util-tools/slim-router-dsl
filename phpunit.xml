@@ -10,6 +10,9 @@
         <testsuite name="Deploy">
             <directory>tests/Deploy</directory>
         </testsuite>
+        <testsuite name="Cli">
+            <directory>tests/Cli</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>

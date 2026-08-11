@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-08-11
+
+CLI, matching the "v1.4 — CLI" milestone of the project's internal roadmap.
+
+### Added
+
+- `bin/router-dsl` executable with two commands: `routes` (lists routes, supports `--json`,
+  `--method=`, `--name=`) and `validate` (runs `Routes::validate()`, exit code 1 on failure).
+  Both support `--bootstrap=path` to load a PHP file that must `return` a `Routes` instance
+  (defaults to `./routes.php`). Neither command instantiates a Slim `App` — only
+  `compile()`/`dump()`/`toArray()`/`validate()` are used, so routes can be listed without
+  booting a full DI container.
+- Hand-rolled CLI dispatcher (`Cli\Application`, `Cli\Commands\RoutesCommand`,
+  `Cli\Commands\ValidateCommand`) — no symfony/console dependency added, matching the
+  project's existing minimal-dependency stance.
+- `composer.json` now declares `bin/router-dsl` via the `bin` key.
+
+### Internal
+
+- Extracted `Routes::dump()`/`toArray()`'s formatting logic into a new `Compiler\RouteDumper`
+  collaborator operating on `CompiledRoute[]`, so the CLI can format arbitrary (e.g.
+  method/name-filtered) route lists using the exact same logic. Pure refactor — `Routes`'
+  public API and output are unchanged.
+
 ## [1.3.0] - 2026-08-11
 
 DSL Convenience, matching the "v1.3 — DSL Convenience" milestone of the project's internal

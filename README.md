@@ -233,6 +233,40 @@ $routes->deploy($app);
 
 `Routes` の構築時点ではルートツリーをメモリ上に構築するだけで、`deploy(App $app)` を呼んだ時点で初めてSlimへ登録されます。
 
+## CLI
+
+```bash
+vendor/bin/router-dsl routes [--bootstrap=path] [--json] [--method=METHOD] [--name=NAME]
+vendor/bin/router-dsl validate [--bootstrap=path]
+```
+
+`--bootstrap` で指定したPHPファイルが `Routes` インスタンスを `return` する必要があります(未指定時はカレントディレクトリの `./routes.php` を探索)。
+
+```php
+// routes.php
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
+use Tanahiro2010\SlimRouterDsl\Route;
+use Tanahiro2010\SlimRouterDsl\Routes;
+
+return new Routes([
+    Route::get('/', HomeController::class),
+    // ...
+]);
+```
+
+`routes` コマンドはSlimの `App` を一切生成せず `Routes::compile()`/`dump()`/`toArray()`(v1.1)のみを利用するため、DIコンテナ全体を起動せずにルート一覧を確認できます。`validate` コマンドは `Routes::validate()`(v1.1)を実行し、問題があればexit code 1で終了します。
+
+```bash
+vendor/bin/router-dsl routes --bootstrap=routes.php
+vendor/bin/router-dsl routes --bootstrap=routes.php --json
+vendor/bin/router-dsl routes --bootstrap=routes.php --method=POST
+vendor/bin/router-dsl routes --bootstrap=routes.php --name=users.show
+vendor/bin/router-dsl validate --bootstrap=routes.php
+```
+
 ## 例外
 
 すべてのライブラリ独自例外は `RouterDslException`（`RuntimeException` を継承）を共通の基底とし、一括catchできます。
@@ -271,6 +305,10 @@ v1.3では以下を追加しました。
 
 - `Route::resource()` — 標準的なCRUD Routeの一括生成(`only`/`except`対応)
 - `Route::controller()` — 同一Controllerを使うRoute群でController class記述を省略
+
+v1.4では以下を追加しました。
+
+- CLI (`vendor/bin/router-dsl routes` / `validate`) — `--bootstrap`/`--json`/`--method=`/`--name=` 対応、Slim Appなしでルート一覧・検証が可能
 
 詳細は [CHANGELOG.md](CHANGELOG.md) と [slim-router-dsl-prd.md](slim-router-dsl-prd.md) を参照してください。
 

@@ -2,7 +2,10 @@
     "name": "tanahiro2010/slim-router-dsl",
     "description": "Slim Original DSL for router",
     "type": "library",
-    "version": "1.3.0",
+    "version": "1.4.0",
+    "bin": [
+        "bin/router-dsl"
+    ],
     "require": {
         "slim/slim": "^4.15"
     },
