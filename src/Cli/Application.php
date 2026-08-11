@@ -99,6 +99,16 @@ final class Application
     {
         $path = $bootstrapPath ?? (getcwd() . '/routes.php');
 
+        // Reject stream-wrapper URIs (phar://, http://, data://, etc.). --bootstrap
+        // is documented as a local project file path; nothing in the CLI's intended
+        // usage ever requires a stream wrapper, and accepting one only expands the
+        // attack surface if this value is ever derived from untrusted input.
+        if (preg_match('#^[a-zA-Z][a-zA-Z0-9+.\-]*://#', $path) === 1) {
+            throw new RuntimeException(
+                sprintf('Bootstrap path must be a local file path, not a stream wrapper URI: %s', $path)
+            );
+        }
+
         if (!is_file($path)) {
             throw new RuntimeException(sprintf('Bootstrap file not found: %s', $path));
         }

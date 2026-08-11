@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2026-08-11
+
+Security patch release, addressing findings from an internal security review.
+
+### Security
+
+- **`RouteFlattener` uncontrolled recursion / memory exhaustion (Medium)**: `Routes::compile()`
+  (and therefore `deploy()`, `toArray()`, `dump()`, `validate()`, `filter()`, and the CLI) had
+  no limit on `Route::group()`/`Route::middleware()`/`Route::controller()` nesting depth.
+  Because `RouteContext` accumulates the full concatenated prefix string at every level, memory
+  usage grew roughly quadratically with nesting depth, allowing a sufficiently deep route tree
+  to crash the process with an uncatchable "Allowed memory size exhausted" fatal error. Fixed
+  by adding a maximum nesting depth (256) to `RouteFlattener::walk()`, which now throws a new,
+  catchable `RouteTreeTooDeepException` instead. This only affects applications that construct
+  route tree nesting depth from external/dynamic data — a static, hand-authored route
+  definition can never exceed the new limit in normal use.
+- **CLI `--bootstrap` accepted arbitrary stream-wrapper URIs (Low)**: `Cli\Application::loadRoutes()`
+  passed the `--bootstrap` value straight to `is_file()`/`require` with no restriction, so
+  `phar://`, `http://`, `data://`, etc. URIs were all silently accepted. A well-known PHP
+  vulnerability class (Phar metadata deserialization via `is_file()`) was tested and found not
+  to apply on the tested PHP version, and remote inclusion is blocked by PHP's default
+  `allow_url_include=Off`, but the library provided no defense-in-depth against either. Fixed
+  by rejecting any `--bootstrap` value containing a stream-wrapper scheme (`scheme://`) before
+  it reaches `is_file()`/`require`.
+
+### Added
+
+- `Exception\RouteTreeTooDeepException`
+
 ## [1.4.0] - 2026-08-11
 
 CLI, matching the "v1.4 — CLI" milestone of the project's internal roadmap.

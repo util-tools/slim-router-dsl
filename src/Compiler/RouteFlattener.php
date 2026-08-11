@@ -6,6 +6,7 @@ namespace Tanahiro2010\SlimRouterDsl\Compiler;
 
 use Tanahiro2010\SlimRouterDsl\Contracts\RouteNode;
 use Tanahiro2010\SlimRouterDsl\Exception\InvalidRouteNodeException;
+use Tanahiro2010\SlimRouterDsl\Exception\RouteTreeTooDeepException;
 use Tanahiro2010\SlimRouterDsl\Nodes\ControllerGroup;
 use Tanahiro2010\SlimRouterDsl\Nodes\HttpRoute;
 use Tanahiro2010\SlimRouterDsl\Nodes\MiddlewareGroup;
@@ -18,14 +19,22 @@ use Tanahiro2010\SlimRouterDsl\Nodes\RouteGroup;
 final class RouteFlattener
 {
     /**
+     * Generous default: real-world route trees rarely nest beyond ~10 levels.
+     * Bounds both the recursion depth and the quadratic memory growth from
+     * RouteContext::withPrefix()'s accumulated prefix strings.
+     */
+    private const MAX_DEPTH = 256;
+
+    /**
      * @param RouteNode[] $routes
      * @return CompiledRoute[]
+     * @throws RouteTreeTooDeepException if nesting exceeds self::MAX_DEPTH
      */
     public function flatten(array $routes): array
     {
         $compiled = [];
 
-        $this->walk($routes, new RouteContext(), $compiled);
+        $this->walk($routes, new RouteContext(), $compiled, 0);
 
         return $compiled;
     }
@@ -34,8 +43,14 @@ final class RouteFlattener
      * @param RouteNode[] $nodes
      * @param CompiledRoute[] $compiled
      */
-    private function walk(array $nodes, RouteContext $context, array &$compiled): void
+    private function walk(array $nodes, RouteContext $context, array &$compiled, int $depth): void
     {
+        if ($depth > self::MAX_DEPTH) {
+            throw new RouteTreeTooDeepException(
+                sprintf('Route tree exceeds the maximum nesting depth of %d.', self::MAX_DEPTH)
+            );
+        }
+
         foreach ($nodes as $node) {
             match (true) {
                 $node instanceof HttpRoute => $compiled[] = $this->compileHttpRoute($node, $context),
@@ -43,16 +58,19 @@ final class RouteFlattener
                     $node->children,
                     $context->withPrefix($node->prefix),
                     $compiled,
+                    $depth + 1,
                 ),
                 $node instanceof MiddlewareGroup => $this->walk(
                     $node->children,
                     $context->withMiddleware($node->middleware),
                     $compiled,
+                    $depth + 1,
                 ),
                 $node instanceof ControllerGroup => $this->walk(
                     $node->children,
                     $context->withController($node->controller),
                     $compiled,
+                    $depth + 1,
                 ),
                 default => throw new InvalidRouteNodeException(
                     sprintf('Unknown RouteNode implementation: %s', $node::class)
