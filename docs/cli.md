@@ -40,6 +40,8 @@ return new Routes([
 vendor/bin/router-dsl routes --bootstrap=routes.php
 ```
 
+**セキュリティ上の注意**: `--bootstrap` にはローカルのファイルパスのみを指定してください。`phar://`/`http://`/`data://` などのstream wrapper URIはv1.4.1以降拒否されます(意図しないファイルインクルードやリモートコード実行相当のリスクを避けるため)。`--bootstrap` の値を外部から受け取った未検証の入力から組み立てることは絶対に避けてください。
+
 ## コマンド一覧
 
 ### `routes` — ルート一覧の表示
@@ -105,7 +107,7 @@ GET /users/{id} is defined multiple times.
 |---|---|
 | `0` | 成功 |
 | `1` | コマンド未指定 / 未知のコマンド / `validate` が重複を検出 |
-| `2` | Bootstrapファイルが見つからない、または `Routes` インスタンスを返していない |
+| `2` | Bootstrapファイルが見つからない、`Routes` インスタンスを返していない、または`--bootstrap`にstream wrapper URIが指定された |
 
 ## CI / pre-commitフックへの組み込み例
 

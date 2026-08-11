@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Cli;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tanahiro2010\SlimRouterDsl\Cli\Application;
 
@@ -87,6 +88,31 @@ final class ApplicationTest extends TestCase
         ]);
 
         self::assertSame(2, $exitCode);
+    }
+
+    #[DataProvider('streamWrapperBootstrapPathProvider')]
+    public function testStreamWrapperBootstrapPathIsRejected(string $path): void
+    {
+        $exitCode = (new Application())->run([
+            'router-dsl',
+            'routes',
+            '--bootstrap=' . $path,
+        ]);
+
+        self::assertSame(2, $exitCode);
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public static function streamWrapperBootstrapPathProvider(): array
+    {
+        return [
+            'phar wrapper' => ['phar://' . self::FIXTURES . '/routes.php'],
+            'http wrapper' => ['http://example.com/routes.php'],
+            'data wrapper' => ['data://text/plain;base64,PD9waHA/Pg=='],
+            'file wrapper' => ['file://' . self::FIXTURES . '/routes.php'],
+        ];
     }
 
     public function testMissingCommandReturnsOne(): void

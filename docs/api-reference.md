@@ -367,6 +367,7 @@ final class RouteFlattener
      * @param RouteNode[] $routes
      * @return CompiledRoute[]
      * @throws InvalidRouteNodeException 未知のRouteNode実装が含まれる場合
+     * @throws RouteTreeTooDeepException ネストが最大深度(既定256)を超える場合(v1.4.1〜)
      */
     public function flatten(array $routes): array;
 }
