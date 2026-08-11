@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-08-11
+
+DSL Convenience, matching the "v1.3 — DSL Convenience" milestone of the project's internal
+roadmap.
+
+### Added
+
+- `Route::resource(string $prefix, mixed $controller, ?array $only = null, ?array $except = null): RouteGroup`
+  — generates the standard `index/show/create/update/patch/delete` CRUD routes. `$only` and
+  `$except` are mutually exclusive (`InvalidRouteException` if both are given).
+- `Route::controller(mixed $controller, array $children): ControllerGroup` — new `ControllerGroup`
+  node. Inside it, a plain string `HttpRoute` handler is resolved as `[$controller, $handler]`
+  at flatten time via a new `RouteContext::$controller`/`withController()`. String handlers
+  outside a `Route::controller()` block are completely unaffected (ambient controller is `null`),
+  so this is purely additive with no behavior change for existing route trees.
+
+### Changed
+
+- None (no breaking changes in this release).
+
 ## [1.2.0] - 2026-08-11
 
 Metadata, matching the "v1.2 — Metadata" milestone of the project's internal roadmap.

@@ -12,6 +12,7 @@ final readonly class RouteContext
     public function __construct(
         public string $prefix = '',
         public array $middleware = [],
+        public mixed $controller = null,
     ) {
     }
 
@@ -20,6 +21,7 @@ final readonly class RouteContext
         return new self(
             self::joinPaths($this->prefix, $prefix),
             $this->middleware,
+            $this->controller,
         );
     }
 
@@ -31,6 +33,19 @@ final readonly class RouteContext
         return new self(
             $this->prefix,
             [...$this->middleware, ...$middleware],
+            $this->controller,
+        );
+    }
+
+    /**
+     * Replaces (not merges) the ambient controller — a route can only have one.
+     */
+    public function withController(mixed $controller): self
+    {
+        return new self(
+            $this->prefix,
+            $this->middleware,
+            $controller,
         );
     }
 

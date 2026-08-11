@@ -187,6 +187,42 @@ $routes->validate();
 
 いずれも最初に見つかった時点でthrowされます（method+pathの重複チェックが先、name重複チェックが後）。
 
+### Route::resource()
+
+```php
+Route::resource('/users', UserController::class);
+```
+
+展開結果(Handlerはそれぞれ `[UserController::class, '<action>']`):
+
+```text
+GET     /users
+GET     /users/{id}
+POST    /users
+PUT     /users/{id}
+PATCH   /users/{id}
+DELETE  /users/{id}
+```
+
+`only`/`except` で生成対象を絞り込めます(同時指定は `InvalidRouteException`)。
+
+```php
+Route::resource('/users', UserController::class, only: ['index', 'show']);
+Route::resource('/users', UserController::class, except: ['delete']);
+```
+
+### Route::controller()
+
+```php
+Route::controller(UserController::class, [
+    Route::get('/', 'index'),
+    Route::get('/{id}', 'show'),
+    Route::post('/', 'create'),
+]);
+```
+
+`Route::controller()` の配下では、Handlerに文字列を渡すと `[UserController::class, '<文字列>']` として解決されます。Closureや `[Class, method]` 配列など文字列以外のHandlerは影響を受けません。また `Route::controller()` の外側で文字列Handlerを使う場合(Slimのコンテナ名解決など)は従来通り変化しません。`Route::group()`/`Route::middleware()` と自由にネストできます。
+
 ### deploy()
 
 ```php
@@ -230,6 +266,11 @@ v1.2では以下を追加しました。
 - `HttpRoute::meta()` — Route単位の任意メタデータ付与（Fluent API、immutable）
 - `CompiledRoute::$metadata` / `toArray()` の `metadata` キー
 - `Routes::filter()` — 任意の述語でCompiledRouteを絞り込み
+
+v1.3では以下を追加しました。
+
+- `Route::resource()` — 標準的なCRUD Routeの一括生成(`only`/`except`対応)
+- `Route::controller()` — 同一Controllerを使うRoute群でController class記述を省略
 
 詳細は [CHANGELOG.md](CHANGELOG.md) と [slim-router-dsl-prd.md](slim-router-dsl-prd.md) を参照してください。
 
