@@ -27,6 +27,7 @@ final class RouteInspectionTest extends TestCase
                 'handler' => 'Home',
                 'middleware' => [],
                 'name' => null,
+                'metadata' => [],
             ],
             [
                 'methods' => ['GET'],
@@ -34,6 +35,7 @@ final class RouteInspectionTest extends TestCase
                 'handler' => 'Index',
                 'middleware' => [],
                 'name' => null,
+                'metadata' => [],
             ],
             [
                 'methods' => ['POST'],
@@ -41,6 +43,7 @@ final class RouteInspectionTest extends TestCase
                 'handler' => 'Create',
                 'middleware' => [],
                 'name' => null,
+                'metadata' => [],
             ],
         ], $routes->toArray());
     }

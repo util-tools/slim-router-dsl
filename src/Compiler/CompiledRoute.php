@@ -13,6 +13,7 @@ final readonly class CompiledRoute
     /**
      * @param string[] $methods
      * @param array $middleware Declared (outer -> inner) order.
+     * @param array $metadata Arbitrary user-defined metadata set via HttpRoute::meta().
      */
     public function __construct(
         public array $methods,
@@ -20,6 +21,7 @@ final readonly class CompiledRoute
         public mixed $handler,
         public array $middleware,
         public ?string $name,
+        public array $metadata = [],
     ) {
     }
 }

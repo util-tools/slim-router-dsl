@@ -108,6 +108,25 @@ Route::get('/me', [UserController::class, 'me'])
 
 `HttpRoute` はimmutableなので、`middleware()` / `name()` はどちらも新しいインスタンスを返します。元のインスタンスは変更されません。Route単位のmiddlewareは、GroupやMiddlewareから継承したmiddlewareより後（Handlerに最も近い位置）に実行されます。`name()` で指定した名前は `deploy()` 時にSlimの `setName()` に渡されます。
 
+### Metadata
+
+```php
+Route::get('/users/{id}', [UserController::class, 'show'])
+    ->name('users.show')
+    ->meta([
+        'summary' => 'ユーザー取得',
+        'auth' => true,
+        'permission' => 'users.read',
+    ]);
+```
+
+`meta()` もimmutableな Fluent APIで、複数回呼び出すと後から指定したキーが上書きされる形でマージされます（Group/Middleware単位での継承は行わず、Route単位のみ）。付与したメタデータは `compile()`/`toArray()` の結果や `filter()` から参照できます。
+
+```php
+// authが必要なRouteだけ抽出
+$routes->filter(fn (CompiledRoute $route) => $route->metadata['auth'] ?? false);
+```
+
 ### Route Dump / toArray() / compile()
 
 ```php
@@ -136,12 +155,13 @@ $routes->toArray();
         'handler' => [UserController::class, 'index'],
         'middleware' => [AuthMiddleware::class],
         'name' => null,
+        'metadata' => [],
     ],
     // ...
 ];
 ```
 
-`compile()` は同じ内容を `CompiledRoute[]`（`methods`/`path`/`handler`/`middleware`/`name` を持つreadonlyオブジェクト）として返す、より低レベルなAPIです。`toArray()`/`dump()`/後述のInspection APIはすべてこの `compile()` の結果を利用しています。
+`compile()` は同じ内容を `CompiledRoute[]`（`methods`/`path`/`handler`/`middleware`/`name`/`metadata` を持つreadonlyオブジェクト）として返す、より低レベルなAPIです。`toArray()`/`dump()`/後述のInspection APIはすべてこの `compile()` の結果を利用しています。
 
 いずれもSlimへ`deploy()`する前に呼び出せる、Slimに依存しないルートツリーの解析APIです。
 
@@ -204,6 +224,12 @@ v1.1では以下を追加しました。
 - `Routes::findByName()` / `filterByMethod()` / `findByPath()` / `filterByMiddleware()`
 - `Routes::validate()`（重複Route / 重複Route Nameの検出）
 - `dump()` のテーブル形式化(NAME/MIDDLEWARE列、オプションでHANDLER列)
+
+v1.2では以下を追加しました。
+
+- `HttpRoute::meta()` — Route単位の任意メタデータ付与（Fluent API、immutable）
+- `CompiledRoute::$metadata` / `toArray()` の `metadata` キー
+- `Routes::filter()` — 任意の述語でCompiledRouteを絞り込み
 
 詳細は [CHANGELOG.md](CHANGELOG.md) と [slim-router-dsl-prd.md](slim-router-dsl-prd.md) を参照してください。
 

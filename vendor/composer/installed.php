@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'tanahiro2010/slim-router-dsl',
-        'pretty_version' => '1.1.0',
-        'version' => '1.1.0.0',
+        'pretty_version' => '1.2.0',
+        'version' => '1.2.0.0',
         'reference' => null,
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
@@ -356,8 +356,8 @@
             'dev_requirement' => true,
         ),
         'tanahiro2010/slim-router-dsl' => array(
-            'pretty_version' => '1.1.0',
-            'version' => '1.1.0.0',
+            'pretty_version' => '1.2.0',
+            'version' => '1.2.0.0',
             'reference' => null,
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',

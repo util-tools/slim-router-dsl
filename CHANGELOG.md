@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-08-11
+
+Metadata, matching the "v1.2 — Metadata" milestone of the project's internal roadmap.
+
+### Added
+
+- `HttpRoute::meta(array): self` — fluent, immutable route-level metadata (merges over
+  existing metadata, later keys override earlier ones). Group/Middleware-level metadata
+  inheritance is intentionally out of scope for this release.
+- `CompiledRoute::$metadata` — populated from `HttpRoute::$metadata` by `RouteFlattener`
+- `Routes::filter(callable $predicate): CompiledRoute[]` — query routes by any predicate,
+  e.g. `$routes->filter(fn ($r) => $r->metadata['auth'] ?? false)`
+
+### Changed
+
+- **Breaking:** `Routes::toArray()` now includes a `'metadata'` key on every row, for
+  consistency with `compile()`'s `CompiledRoute::$metadata`.
+
 ## [1.1.0] - 2026-08-11
 
 Inspection & Validation, matching the "v1.1 — Inspection & Validation" milestone of the

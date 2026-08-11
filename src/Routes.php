@@ -85,12 +85,22 @@ final class Routes
     }
 
     /**
+     * @param callable(CompiledRoute): bool $predicate
+     * @return CompiledRoute[]
+     */
+    public function filter(callable $predicate): array
+    {
+        return array_values(array_filter($this->compile(), $predicate));
+    }
+
+    /**
      * @return array<int, array{
      *     methods: string[],
      *     path: string,
      *     handler: mixed,
      *     middleware: array,
      *     name: string|null,
+     *     metadata: array,
      * }>
      */
     public function toArray(): array
@@ -102,6 +112,7 @@ final class Routes
                 'handler' => $route->handler,
                 'middleware' => $route->middleware,
                 'name' => $route->name,
+                'metadata' => $route->metadata,
             ],
             $this->compile(),
         );

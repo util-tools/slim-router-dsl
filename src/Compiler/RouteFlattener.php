@@ -63,6 +63,7 @@ final class RouteFlattener
             $node->handler,
             [...$context->middleware, ...$node->middleware],
             $node->name,
+            $node->metadata,
         );
     }
 }
