@@ -18,6 +18,8 @@ $routes->deploy($app);
 
 このコードだけで、`/api` 配下・Auth Middleware適用・usersエンドポイント群・`deploy()` によるSlimへの登録、という構造が一目でわかります。
 
+詳細なドキュメントは [`/docs`](docs/README.md)、実際に動くサンプルコードは [`/example`](example/README.md) を参照してください。
+
 ## インストール
 
 ```bash
@@ -310,7 +312,7 @@ v1.4では以下を追加しました。
 
 - CLI (`vendor/bin/router-dsl routes` / `validate`) — `--bootstrap`/`--json`/`--method=`/`--name=` 対応、Slim Appなしでルート一覧・検証が可能
 
-詳細は [CHANGELOG.md](CHANGELOG.md) と [slim-router-dsl-prd.md](slim-router-dsl-prd.md) を参照してください。
+詳細は [`/docs`](docs/README.md)、[CHANGELOG.md](CHANGELOG.md)、[slim-router-dsl-prd.md](slim-router-dsl-prd.md) を参照してください。
 
 ## 動作要件
 
