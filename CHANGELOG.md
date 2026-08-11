@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2026-08-11
 
-Initial release. Scope matches [slim-router-dsl-roadmap.md](slim-router-dsl-roadmap.md) section 14
-("v1.0.0 — Initial Release").
+Initial release. Scope matches the "v1.0.0 — Initial Release" milestone of the project's
+internal roadmap.
 
 ### Added
 
