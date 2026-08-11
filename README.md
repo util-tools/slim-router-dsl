@@ -325,3 +325,7 @@ v1.4では以下を追加しました。
 composer install
 composer test
 ```
+
+## License
+
+MIT License. 詳細は [LICENSE](LICENSE) を参照してください。
